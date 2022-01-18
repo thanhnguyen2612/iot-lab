@@ -33,6 +33,15 @@ def connected(client, usedata, flags, rc):
     else:
         print("Connection is failed")
 
+def get_current_location():
+    LATITUDE, LONGITUDE = 10.8231, 106.6297
+    try:
+        ip = requests.get('http://ident.me').text
+        response = requests.get(f"http://ip-api.com/json/{ip}").json()
+        return response['lat'], response['lon']
+    except:
+        return LATITUDE, LONGITUDE
+
 
 client = mqttclient.Client("Gateway_Thingsboard")
 client.username_pw_set(THINGS_BOARD_ACCESS_TOKEN)
@@ -48,9 +57,7 @@ temp = 30
 humid = 50
 light_intesity = 100
 counter = 0
-LATITUDE = 10.8231
-LONGITUDE = 106.6297
-lat, lon = LATITUDE, LONGITUDE
+lat, lon = get_current_location()
 
 while True:
     collect_data = {
@@ -63,13 +70,7 @@ while True:
     temp = random.randrange(-50, 90)
     humid = random.randrange(120)
     light_intesity = random.randrange(100)
-
-    try:
-        ip = requests.get('http://ident.me').text
-        response = requests.get(f"http://ip-api.com/json/{ip}").json()
-        lat, lon = response['lat'], response['lon']
-    except:
-        lat, lon = LATITUDE, LONGITUDE
+    lat, lon = get_current_location()
 
     client.publish('v1/devices/me/telemetry', json.dumps(collect_data), 1)
     time.sleep(10)
