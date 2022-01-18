@@ -3,7 +3,6 @@ import paho.mqtt.client as mqttclient
 import time
 import json
 import random
-import geocoder
 import requests
 
 BROKER_ADDRESS = "demo.thingsboard.io"
