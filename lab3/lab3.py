@@ -21,16 +21,8 @@ def processData(data):
     print(splitData)
     #TODO: Add your source code to publish data to the server
     try:
-        if splitData[1] in ['LED', 'FAN']:
-            data = {
-                'method': f"set{splitData[1]}",
-                'params': splitData[2] == 'ON'
-            }
-            print(data)
-            client.publish('v1/devices/me/rpc/request/+', json.dumps(data), 1)
-        else:
-            data = {splitData[1] : splitData[2]}
-            client.publish('v1/devices/me/telemetry', json.dumps(data), 1)
+        data = {splitData[1] : splitData[2]}
+        client.publish('v1/devices/me/telemetry', json.dumps(data), 1)
     except:
         print('Error publish to', BROKER_ADDRESS)
 
@@ -61,6 +53,7 @@ def recv_message(client, userdata, message):
         jsonobj = json.loads(message.payload)
         if jsonobj['method'] == 'setLED':
             recv_data['value'] = jsonobj['params']
+            print(recv_data)
             client.publish('v1/devices/me/attributes', json.dumps(recv_data), 1)
             cmd = 1 if recv_data['value'] else 0
         if jsonobj['method'] == 'setFAN':
